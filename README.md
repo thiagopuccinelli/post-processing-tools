@@ -10,5 +10,6 @@ To implement fortran 90 code, one should follow the bellow commands line in term
 # Radial distribution function: 
 
 In python3: 
-
---- f2py3 -c lib/radial_distribution_function.f90 -m radial_distribution_evaluation
+```
+f2py3 -c lib/radial_distribution_function.f90 -m radial_distribution_evaluation
+```
