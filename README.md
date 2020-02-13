@@ -8,4 +8,4 @@ To implement fortran 90 code, one should follow the bellow command line in termi
 
 In python3: 
 
---- f2py3 -c lib/radial_distribution.f90 -m radial_distribution
+--- f2py3 -c lib/radial_distribution_function.f90 -m radial_distribution_function
