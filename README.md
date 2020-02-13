@@ -4,7 +4,10 @@ This repository has tools for analysing Molecular Dynamics data.
 
 # Step to implement fortran 90 codes as library for python code:
 
-To implement fortran 90 code, one should follow the bellow command line in terminal:
+To implement fortran 90 code, one should follow the bellow commands line in terminal:
+
+
+# Radial distribution function: 
 
 In python3: 
 
