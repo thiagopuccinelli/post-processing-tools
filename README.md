@@ -1,3 +1,11 @@
 # post-processing-tools
 
 This repository has tools for analysing Molecular Dynamics data. 
+
+# Step to implement fortran 90 codes as library for python code:
+
+To implement fortran 90 code, one should follow the bellow command line in terminal:
+
+In python3: 
+
+--- f2py3 -c radial_distribution.f90 -m radial_distribution
