@@ -85,13 +85,14 @@ subroutine radial_distribution_one_particle_species(N,filename,snaps,LL,avg,r)
 
 end subroutine 
 
-subroutine radial_distribution_close_to_particle(N,filename,snaps,LL,avgc,rc,avgf,rf)
+subroutine radial_distribution_close_to_particle(N,filename,snaps,LL,density,avgc,rc,avgf,rf)
    implicit none 
 
    integer, intent(in) :: N
    character(64), intent(in) :: filename 
    integer, intent(in) :: snaps  
    real(8), intent(in) :: LL
+   character(64), intent(in) :: density
    character(10) ::  flag
    integer, parameter :: Nhis = 2.**8. 
    real(8), parameter :: time = 1.0
@@ -222,7 +223,7 @@ subroutine radial_distribution_close_to_particle(N,filename,snaps,LL,avgc,rc,avg
          END DO
       END DO
       
-      OPEN(unit=2,file='teste_read_xyz'//trim(flag)//'.dat',action="write")
+      OPEN(unit=2,file='rdf_close_phif_'//trim(density)//'.dat',action="write")
       
       DO i=1,Nhis
          WRITE(2,'(2(f17.10,1X))')rc(i),avgc(i)/snaps
@@ -280,7 +281,7 @@ subroutine radial_distribution_close_to_particle(N,filename,snaps,LL,avgc,rc,avg
          END DO
       END DO
       
-      OPEN(unit=2,file='teste_read_xyz'//trim(flag)//'.dat',action="write")
+      OPEN(unit=2,file='rdf_far_phif_'//trim(density)//'.dat',action="write")
       
       DO i=1,Nhis
          WRITE(2,'(2(f17.10,1X))')rf(i),avgf(i)/snaps
