@@ -1,3 +1,9 @@
+! MODULE FOR SOME USEFULL COMPUTATION IN MOLECULAR DYNAMICS 
+! POST PROCESSING RESULTS PRODUCTION FROM SNAPSHOTS 
+!
+! This module treats LAMMPS .xyz file. 
+
+! 2d standard rdf production for one style particle: 
 subroutine radial_distribution_2d(N,filename,snaps,LL,avg,r)
     implicit none 
     integer, intent(in) :: N 
@@ -153,6 +159,7 @@ subroutine msd_evaluation(N,filename,snaps,LL,time,msdvec,timevec)
         timevec(j) = (j-2) * time 
      enddo
 end subroutine 
+! 3d standard rdf production for one style particle:
 subroutine radial_distribution_3d(N,filename,snaps,LL,avg,r)
     implicit none 
     integer, intent(in) :: N 
@@ -236,5 +243,283 @@ subroutine radial_distribution_3d(N,filename,snaps,LL,avg,r)
         avg(i) = avg(i)/snaps
     END DO
 
+
+end subroutine
+
+! 2d dimer simulation:
+subroutine radial_distribution_center_of_mass(N,filename,snaps,Lx,Ly,avg,r) 
+    implicit none 
+ 
+    integer, intent(in) :: N
+    character(64), intent(in) :: filename 
+    integer, intent(in) :: snaps  
+    real(8), intent(in) :: Lx,Ly
+    integer, parameter :: Nhis = 2.**8. 
+    real(8), parameter :: time = 1.0
+    real(8), intent(out) :: avg(Nhis),r(Nhis)
+    real(8) :: x(snaps,N), y(snaps,N), z(snaps,N), xcm(snaps,N), ycm(snaps,N), zcm(snaps,N)
+    integer :: type(snaps,N), id(snaps,N)
+    integer i, j, k,ig,N1,nd
+    character(64) :: dumb1
+    character(64) :: dumb2
+    DOUBLE PRECISION::rr,delg,pi,xr,yr,zr,r2,vb,nid,rho
+    DOUBLE PRECISION,DIMENSION(10000, Nhis)::gr
+
+    delg=10.0/(Nhis)
+    pi=4*ATAN(1.)
+    N1 = N/2
+    rho = N1/((Lx*Ly)**2.0d0)
+    gr = 0.0d0
+    avg(:)=0.d0
+    
+    open(10,file=trim(filename)//'.snap')
+ 
+    do j = 1, snaps 
+        read(10,*) dumb1
+        read(10,*) dumb2
+        do i = 1, N 
+           read(10,*) type(j,i), x(j,i), y(j,i), z(j,i)
+        enddo
+        nd = 0 
+        do i=1, N , 2 
+           nd = nd + 1 
+           xcm(j,nd) = (x(j,i+1) + x(j,i))/2.
+           ycm(j,nd) = (y(j,i+1) + y(j,i))/2.
+           zcm(j,nd) = (z(j,i+1) + z(j,i))/2.
+        enddo 
+    enddo 
+ 
+    close(10)
+
+    DO k=1,snaps
+        DO i=1,N1 - 1 
+           DO j=i+1,N1 
+           xr=xcm(k,i)-xcm(k,j)
+           yr=ycm(k,i)-ycm(k,j)
+           
+           
+           xr=xr-Lx*(NINT(xr/Lx))
+           yr=yr-Ly*(NINT(yr/Ly))
+           
+           r2=xr*xr+yr*yr
+           rr=SQRT(r2)
+  
+           IF(rr.LT.10.d0)THEN
+                 ig=ceiling(rr/delg)
+                 gr(k,ig)=gr(k,ig)+2.
+           END IF
+           END DO
+        END DO
+    END DO
+  
+     
+  
+     
+    DO j=1,Nhis
+        DO i=1,snaps
+           r(j)=delg*(j+0.5)
+           vb=((j+1)**2.-j**2.)*delg**2.
+           nid = pi*vb/(Lx*Ly)
+           gr(i,j)=gr(i,j)/(N1*nid)
+        END DO
+    END DO
+  
+     
+     
+  
+     
+    DO i=1,Nhis
+        DO j=1,snaps
+           avg(i)=avg(i)+gr(j,i)
+        END DO
+    END DO
+     
+    OPEN(unit=2,file='rdf_'//trim(filename)//'_cm.dat',action="write")
+     
+    DO i=1,Nhis
+        WRITE(2,'(2(f17.10,1X))')r(i),avg(i)/snaps/N1
+    END DO
+
+    close(2)
+ 
+end subroutine 
+
+subroutine radial_distribution_monomer_to_monomer(N,filename,snaps,Lx,Ly,avg,r)
+    implicit none 
+    integer, intent(in) :: N
+    character(64), intent(in) :: filename 
+    integer, intent(in) :: snaps  
+    real(8), intent(in) :: Lx,Ly
+    integer, parameter :: Nhis = 2.**8. 
+    real(8), parameter :: time = 1.0
+    real(8), intent(out) :: avg(Nhis),r(Nhis)
+    real(8) :: x(snaps,N), y(snaps,N), z(snaps,N), xcm(snaps,N), ycm(snaps,N), zcm(snaps,N)
+    integer :: type(snaps,N), id(snaps,N)
+    integer i, j, k,ig,N1,nd
+    character(64) :: dumb1
+    character(64) :: dumb2
+    DOUBLE PRECISION::rr,delg,pi,xr,yr,zr,r2,vb,nid,rho
+    DOUBLE PRECISION,DIMENSION(10000, Nhis)::gr
+
+
+    delg=10.0/(Nhis)
+    pi=4*ATAN(1.)
+    N1 = N
+    rho = N1/((Lx*Ly)**2.0d0)
+    gr = 0.0d0
+    avg(:)=0.d0
+    
+    open(10,file=trim(filename)//'.snap')
+ 
+    do j = 1, snaps 
+        read(10,*) dumb1
+        read(10,*) dumb2
+        do i = 1, N 
+           read(10,*) type(j,i), x(j,i), y(j,i), z(j,i)
+        enddo
+    enddo     
+
+    close(10)
+
+    DO k=1,snaps
+        DO i=1,N1 - 1 
+           DO j=i+1,N1 
+           xr=x(k,i)-x(k,j)
+           yr=y(k,i)-y(k,j)
+           
+           
+           xr=xr-Lx*(NINT(xr/Lx))
+           yr=yr-Ly*(NINT(yr/Ly))
+           
+           r2=xr*xr+yr*yr
+           rr=SQRT(r2)
+  
+           IF(rr<=10.0)THEN
+                if ((-1.0)**i == 1.0) then !se i é par cacula sempre
+                    ig=ceiling(rr/delg)
+                    gr(k,ig)=gr(k,ig)+2.
+                else if ((-1.0)**i == -1.0 .and. j /= i+1) then !se i é impar e j diferente de i+1
+                    ig=ceiling(rr/delg)
+                    gr(k,ig)=gr(k,ig)+2.
+                endif
+            END IF
+           END DO
+        END DO
+    END DO
+  
+     
+  
+     
+    DO j=1,Nhis
+        DO i=1,snaps
+           r(j)=delg*(j+0.5)
+           vb=((j+1)**2.-j**2.)*delg**2.
+           nid = pi*vb/(Lx*Ly)
+           gr(i,j)=gr(i,j)/(N1*nid)
+        END DO
+    END DO
+  
+     
+     
+  
+     
+    DO i=1,Nhis
+        DO j=1,snaps
+           avg(i)=avg(i)+gr(j,i)
+        END DO
+    END DO
+     
+    OPEN(unit=2,file='rdf_'//trim(filename)//'_mon_mon.dat',action="write")
+     
+    DO i=1,Nhis
+        WRITE(2,'(2(f17.10,1X))')r(i),avg(i)/snaps/N1
+    END DO
+
+    close(2)
+
+
+end subroutine
+
+subroutine print_center_of_mass_XYZ(N,filename,snaps,Lx,Ly,avg,r) 
+    implicit none 
+ 
+    integer, intent(in) :: N
+    character(64), intent(in) :: filename 
+    integer, intent(in) :: snaps  
+    real(8), intent(in) :: Lx,Ly
+    integer, parameter :: Nhis = 2.**8. 
+    real(8), parameter :: time = 1.0
+    real(8), intent(out) :: avg(Nhis),r(Nhis)
+    real(8) :: x(snaps,N), y(snaps,N), z(snaps,N), xcm(snaps,N), ycm(snaps,N), zcm(snaps,N)
+    integer :: type(snaps,N), id(snaps,N)
+    integer i, j, k,ig,N1,nd
+    character(64) :: dumb1
+    character(64) :: dumb2
+    DOUBLE PRECISION::rr,delg,pi,xr,yr,zr,r2,vb,nid,rho
+    DOUBLE PRECISION,DIMENSION(10000, Nhis)::gr
+
+    N1 = N/2
+    
+    open(10,file=trim(filename)//'.snap')
+ 
+    do j = 1, snaps 
+        read(10,*) dumb1
+        read(10,*) dumb2
+        do i = 1, N 
+           read(10,*) type(j,i), x(j,i), y(j,i), z(j,i)
+        enddo
+        nd = 0 
+        do i=1, N , 2 
+           nd = nd + 1 
+           xcm(j,nd) = (x(j,i+1) + x(j,i))/2.
+           ycm(j,nd) = (y(j,i+1) + y(j,i))/2.
+           zcm(j,nd) = (z(j,i+1) + z(j,i))/2.
+        enddo 
+    enddo 
+
+    close(10)
+ 
+    OPEN(unit=2,file=trim(filename)//'_cm.snap',action="write")
+
+
+    DO k=1,snaps
+        write(2,*) 2000
+        write(2,*) dumb2
+        DO i=1,N1  
+           write(2,*) 1, xcm(k,i),ycm(k,i), 0.0 
+        END DO
+    END DO
+  
+    close(2)
+ 
+end subroutine 
+
+! post processing radial distribution functions: 
+! compute excess entropy 
+subroutine excess_entropy_from_rdf(filein, fileout, sex)
+    implicit none 
+    integer :: i 
+    character(64), intent(in) :: filein 
+    character(64), intent(in) :: fileout  
+    integer, parameter :: Nhis = 2.**8.
+    real(8) :: gor(Nhis), r(Nhis), csum 
+    real(8), intent(out) :: sex 
+
+    sex = 0.d0
+    csum = 0.d0 
+    OPEN(unit=110,file=trim(fileout),action="write")
+    OPEN(unit=120,file=trim(filein),action="read")
+
+    do i = 1, Nhis 
+        read(120,*) r(i), gor(i)
+        if (gor(i) > 0.d0) then 
+            csum = csum - (gor(i)*log(gor(i)) - gor(i) +1)*r(i) !for excess entropy
+            if (gor(i) /= 0.0d0) sex = sex + (gor(i)*log(gor(i)) - gor(i) +1) !for excess entropy
+            write(110,'(f12.6,x,f12.6)') r(i), -3.14*csum
+        endif 
+    enddo 
+
+    close(110)
+    close(120)
 
 end subroutine
