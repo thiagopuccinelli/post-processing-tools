@@ -540,7 +540,7 @@ subroutine radial_distribution_3max(filein, max1, max1r, max2, max2r, max3, max3
     close(120)
     i = 3 
     do while (i <= Nhis-2)
-        if (gor(i) > 1.0) then
+        if (gor(i) > 0.1) then
             if ( ((gor(i+2)-gor(i+1))/(r(i+2)-r(i+1))) < 0.0d0 .and. ((gor(i-2)-gor(i-1))/(r(i-2)-r(i-1))) > 0.0d0 ) then 
                 max1 = gor(i)
                 max1r = r(i)
@@ -552,7 +552,7 @@ subroutine radial_distribution_3max(filein, max1, max1r, max2, max2r, max3, max3
     enddo 
 
     do while (j<= Nhis-2)
-        if  (gor(j) > 1.0) then
+        if  (gor(j) > 0.1) then
             if ( ((gor(j+2)-gor(j+1))/(r(j+2)-r(j+1))) < 0.0d0 .and. ((gor(j-2)-gor(j-1))/(r(j-2)-r(j-1))) > 0.0d0 ) then
                 max2 = gor(j)
                 max2r = r(j)
@@ -564,7 +564,7 @@ subroutine radial_distribution_3max(filein, max1, max1r, max2, max2r, max3, max3
     enddo 
 
     do while (k<= Nhis-2)
-        if  (gor(k) > 1.0) then
+        if  (gor(k) > 0.1) then
             if ( ((gor(k+2)-gor(k+1))/(r(k+2)-r(k+1))) < 0.0d0 .and. ((gor(k-2)-gor(k-1))/(r(k-2)-r(k-1))) > 0.0d0 ) then
                 max3 = gor(k)
                 max3r = r(k)
