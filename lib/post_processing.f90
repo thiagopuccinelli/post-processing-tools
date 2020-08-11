@@ -538,7 +538,7 @@ subroutine radial_distribution_3max(filein, max1, max1r, max2, max2r, max3, max3
     enddo 
 
     close(120)
-
+    i = 3 
     do while (i <= Nhis-2)
         if (gor(i) > 1.0) then
             if ( ((gor(i+2)-gor(i+1))/(r(i+2)-r(i+1))) < 0.0d0 .and. ((gor(i-2)-gor(i-1))/(r(i-2)-r(i-1))) > 0.0d0 ) then 
