@@ -523,3 +523,58 @@ subroutine excess_entropy_from_rdf(filein, fileout, sex)
     close(120)
 
 end subroutine
+subroutine radial_distribution_3max(filein, max1, max1r, max2, max2r, max3, max3r)
+    implicit none 
+    integer :: i, j, k 
+    character(64), intent(in) :: filein 
+    integer, parameter :: Nhis = 2.**8.
+    real(8) :: gor(Nhis), r(Nhis)
+    real(8), intent(out) ::  max1, max1r, max2, max2r, max3, max3r 
+
+    OPEN(unit=120,file=trim(filein),action="read")
+
+    do i = 1, Nhis 
+        read(120,*) r(i), gor(i)
+    enddo 
+
+    close(120)
+
+    do while (i <= Nhis-2)
+        if (gor(i) > 1.0) then
+            if ( ((gor(i+2)-gor(i+1))/(r(i+2)-r(i+1))) < 0.0d0 .and. ((gor(i-2)-gor(i-1))/(r(i-2)-r(i-1))) > 0.0d0 ) then 
+                max1 = gor(i)
+                max1r = r(i)
+                j = i + 3 
+                i = Nhis+1 
+            endif 
+        endif 
+        i = i + 1 
+    enddo 
+
+    do while (j<= Nhis-2)
+        if  (gor(j) > 1.0) then
+            if ( ((gor(j+2)-gor(j+1))/(r(j+2)-r(j+1))) < 0.0d0 .and. ((gor(j-2)-gor(j-1))/(r(j-2)-r(j-1))) > 0.0d0 ) then
+                max2 = gor(j)
+                max2r = r(j)
+                k = j + 3 
+                j = Nhis + 1 
+            endif 
+        endif
+        j = j + 1  
+    enddo 
+
+    do while (k<= Nhis-2)
+        if  (gor(k) > 1.0) then
+            if ( ((gor(k+2)-gor(k+1))/(r(k+2)-r(k+1))) < 0.0d0 .and. ((gor(k-2)-gor(k-1))/(r(k-2)-r(k-1))) > 0.0d0 ) then
+                max3 = gor(k)
+                max3r = r(k)
+                k = Nhis + 1  
+            endif 
+        endif
+        k = k + 1  
+    enddo 
+
+
+    
+
+end subroutine
