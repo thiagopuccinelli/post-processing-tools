@@ -439,7 +439,92 @@ subroutine radial_distribution_monomer_to_monomer(N,filein, fileout,snaps,Lx,Ly,
 
 
 end subroutine
+subroutine radial_distribution_monomeric2d(N,filein, fileout,snaps,Lx,Ly,avg,r) 
+    implicit none 
+ 
+    integer, intent(in) :: N
+    character(64), intent(in) :: filein, fileout 
+    integer, intent(in) :: snaps  
+    real(8), intent(in) :: Lx,Ly
+    integer, parameter :: Nhis = 2.**8. 
+    real(8), parameter :: time = 1.0
+    real(8), intent(out) :: avg(Nhis),r(Nhis)
+    real(8) :: x(snaps,N), y(snaps,N), z(snaps,N), xcm(snaps,N), ycm(snaps,N), zcm(snaps,N)
+    integer :: type(snaps,N), id(snaps,N)
+    integer i, j, k,ig,N1,nd
+    character(64) :: dumb1
+    character(64) :: dumb2
+    DOUBLE PRECISION::rr,delg,pi,xr,yr,zr,r2,vb,nid,rho
+    DOUBLE PRECISION,DIMENSION(10000, Nhis)::gr
 
+    delg=10.0/(Nhis)
+    pi=4*ATAN(1.)
+    N1 = N
+    rho = N1/((Lx*Ly)**2.0d0)
+    gr = 0.0d0
+    avg(:)=0.d0
+    
+    open(10,file=filein)
+ 
+    do j = 1, snaps 
+        read(10,*) dumb1
+        read(10,*) dumb2
+        do i = 1, N 
+           read(10,*) type(j,i), x(j,i), y(j,i), z(j,i)
+        enddo
+    enddo 
+    close(10)
+
+    DO k=1,snaps
+        DO i=1,N1 - 1 
+           DO j=i+1,N1 
+           xr=x(k,i)-x(k,j)
+           yr=y(k,i)-y(k,j)
+           
+           
+           xr=xr-Lx*(NINT(xr/Lx))
+           yr=yr-Ly*(NINT(yr/Ly))
+           
+           r2=xr*xr+yr*yr
+           rr=SQRT(r2)
+  
+           IF(rr.LT.10.d0)THEN
+                 ig=ceiling(rr/delg)
+                 gr(k,ig)=gr(k,ig)+2.
+           END IF
+           END DO
+        END DO
+    END DO
+  
+     
+  
+     
+    DO j=1,Nhis
+        DO i=1,snaps
+           r(j)=delg*(j+0.5)
+           vb=((j+1)**2.-j**2.)*delg**2.
+           nid = pi*vb/(Lx*Ly)
+           gr(i,j)=gr(i,j)/(N1*nid)
+        END DO
+    END DO
+  
+     
+     
+  
+     
+    DO i=1,Nhis
+        DO j=1,snaps
+           avg(i)=avg(i)+gr(j,i)
+        END DO
+    END DO
+     
+    OPEN(unit=2,file=fileout,action="write")
+     
+    DO i=1,Nhis
+        WRITE(2,'(2(f17.10,1X))')r(i),avg(i)/snaps/N1
+    END DO
+    close(2)
+end subroutine 
 subroutine print_center_of_mass_XYZ(N,filein, fileout,snaps,Lx,Ly,avg,r) 
     implicit none 
  
