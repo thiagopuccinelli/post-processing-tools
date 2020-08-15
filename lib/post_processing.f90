@@ -4,10 +4,10 @@
 ! This module treats LAMMPS .xyz file. 
 
 ! 2d standard rdf production for one style particle: 
-subroutine radial_distribution_2d(N,filename,snaps,LL,avg,r)
+subroutine radial_distribution_2d(N,filein, fileout ,snaps,LL,avg,r)
     implicit none 
     integer, intent(in) :: N 
-    character(len=64), intent(in) :: filename
+    character(len=64), intent(in) :: filein, fileout 
     integer, intent(in)  :: snaps 
     real(8), intent(in) :: LL 
     integer, parameter :: Nhis = 2.**8.
@@ -26,7 +26,7 @@ subroutine radial_distribution_2d(N,filename,snaps,LL,avg,r)
 	gr = 0.0d0 
 	avg(:) = 0.d0
 	
-	open(10, file=filename)
+	open(10, file=filein)
 
     do j = 1, snaps
         read(10,*) dumb1 
@@ -75,7 +75,7 @@ subroutine radial_distribution_2d(N,filename,snaps,LL,avg,r)
         END DO
     END DO
 
-	OPEN(unit=2,file='rdf_'//trim(filename)//'.dat',action="write")
+	OPEN(unit=2,file=fileout,action="write")
 	
     DO i=1,Nhis
         WRITE(2,'(2(f17.10,1X))')r(i),avg(i)/snaps
@@ -90,10 +90,10 @@ subroutine radial_distribution_2d(N,filename,snaps,LL,avg,r)
 
 end subroutine
 
-subroutine msd_evaluation(N,filename,snaps,LL,time,msdvec,timevec)
+subroutine msd_evaluation(N,filein, fileout ,snaps,LL,time,msdvec,timevec)
     implicit none 
     integer, intent(in) :: N 
-    character(len=64), intent(in) :: filename
+    character(len=64), intent(in) :: filein, fileout 
     integer, intent(in)  :: snaps 
     real(8), intent(in) :: LL 
     integer, parameter :: Nhis = 2.**8.
@@ -106,7 +106,7 @@ subroutine msd_evaluation(N,filename,snaps,LL,time,msdvec,timevec)
     real(8), intent(out) :: msdvec(snaps), timevec(snaps)
     real(8), intent(in) :: time  !number of steps between each measure x time step
 
-	open(10, file=filename)
+	open(10, file=filein)
 
     do j = 1, snaps
         read(10,*) dumb1 
@@ -137,7 +137,7 @@ subroutine msd_evaluation(N,filename,snaps,LL,time,msdvec,timevec)
         enddo
      enddo
 
-	 OPEN(unit=2,file='msd'//trim(filename)//'.dat',action="write")
+	 OPEN(unit=2,file=fileout,action="write")
      msdvec = 0.0d0
      timevec = 0.0d0
      msd = 0.0d0 
@@ -160,10 +160,10 @@ subroutine msd_evaluation(N,filename,snaps,LL,time,msdvec,timevec)
      enddo
 end subroutine 
 ! 3d standard rdf production for one style particle:
-subroutine radial_distribution_3d(N,filename,snaps,LL,avg,r)
+subroutine radial_distribution_3d(N,filein, fileout,snaps,LL,avg,r)
     implicit none 
     integer, intent(in) :: N 
-    character(len=64), intent(in) :: filename
+    character(len=64), intent(in) :: filein, fileout 
     integer, intent(in)  :: snaps 
     real(8), intent(in) :: LL 
     integer, parameter :: Nhis = 2.**8.
@@ -182,7 +182,7 @@ subroutine radial_distribution_3d(N,filename,snaps,LL,avg,r)
 	gr = 0.0d0 
 	avg(:) = 0.d0
 	
-	open(10, file=filename)
+	open(10, file=filein)
 
     do j = 1, snaps
         read(10,*) dumb1 
@@ -231,7 +231,7 @@ subroutine radial_distribution_3d(N,filename,snaps,LL,avg,r)
         END DO
     END DO
 
-	OPEN(unit=2,file='rdf_'//trim(filename)//'.dat',action="write")
+	OPEN(unit=2,file=fileout,action="write")
 	
     DO i=1,Nhis
         WRITE(2,'(2(f17.10,1X))')r(i),avg(i)/snaps
@@ -247,11 +247,11 @@ subroutine radial_distribution_3d(N,filename,snaps,LL,avg,r)
 end subroutine
 
 ! 2d dimer simulation:
-subroutine radial_distribution_center_of_mass(N,filename,snaps,Lx,Ly,avg,r) 
+subroutine radial_distribution_center_of_mass(N,filein, fileout,snaps,Lx,Ly,avg,r) 
     implicit none 
  
     integer, intent(in) :: N
-    character(64), intent(in) :: filename 
+    character(64), intent(in) :: filein, fileout 
     integer, intent(in) :: snaps  
     real(8), intent(in) :: Lx,Ly
     integer, parameter :: Nhis = 2.**8. 
@@ -272,7 +272,7 @@ subroutine radial_distribution_center_of_mass(N,filename,snaps,Lx,Ly,avg,r)
     gr = 0.0d0
     avg(:)=0.d0
     
-    open(10,file=trim(filename)//'.snap')
+    open(10,file=filein)
  
     do j = 1, snaps 
         read(10,*) dumb1
@@ -334,7 +334,7 @@ subroutine radial_distribution_center_of_mass(N,filename,snaps,Lx,Ly,avg,r)
         END DO
     END DO
      
-    OPEN(unit=2,file='rdf_'//trim(filename)//'_cm.dat',action="write")
+    OPEN(unit=2,file=fileout,action="write")
      
     DO i=1,Nhis
         WRITE(2,'(2(f17.10,1X))')r(i),avg(i)/snaps/N1
@@ -344,10 +344,10 @@ subroutine radial_distribution_center_of_mass(N,filename,snaps,Lx,Ly,avg,r)
  
 end subroutine 
 
-subroutine radial_distribution_monomer_to_monomer(N,filename,snaps,Lx,Ly,avg,r)
+subroutine radial_distribution_monomer_to_monomer(N,filein, fileout,snaps,Lx,Ly,avg,r)
     implicit none 
     integer, intent(in) :: N
-    character(64), intent(in) :: filename 
+    character(64), intent(in) :: filein, fileout  
     integer, intent(in) :: snaps  
     real(8), intent(in) :: Lx,Ly
     integer, parameter :: Nhis = 2.**8. 
@@ -369,7 +369,7 @@ subroutine radial_distribution_monomer_to_monomer(N,filename,snaps,Lx,Ly,avg,r)
     gr = 0.0d0
     avg(:)=0.d0
     
-    open(10,file=trim(filename)//'.snap')
+    open(10,file=filein)
  
     do j = 1, snaps 
         read(10,*) dumb1
@@ -429,7 +429,7 @@ subroutine radial_distribution_monomer_to_monomer(N,filename,snaps,Lx,Ly,avg,r)
         END DO
     END DO
      
-    OPEN(unit=2,file='rdf_'//trim(filename)//'_mon_mon.dat',action="write")
+    OPEN(unit=2,file=fileout,action="write")
      
     DO i=1,Nhis
         WRITE(2,'(2(f17.10,1X))')r(i),avg(i)/snaps/N1
@@ -440,11 +440,11 @@ subroutine radial_distribution_monomer_to_monomer(N,filename,snaps,Lx,Ly,avg,r)
 
 end subroutine
 
-subroutine print_center_of_mass_XYZ(N,filename,snaps,Lx,Ly,avg,r) 
+subroutine print_center_of_mass_XYZ(N,filein, fileout,snaps,Lx,Ly,avg,r) 
     implicit none 
  
     integer, intent(in) :: N
-    character(64), intent(in) :: filename 
+    character(64), intent(in) :: filein, fileout 
     integer, intent(in) :: snaps  
     real(8), intent(in) :: Lx,Ly
     integer, parameter :: Nhis = 2.**8. 
@@ -460,7 +460,7 @@ subroutine print_center_of_mass_XYZ(N,filename,snaps,Lx,Ly,avg,r)
 
     N1 = N/2
     
-    open(10,file=trim(filename)//'.snap')
+    open(10,file=filein)
  
     do j = 1, snaps 
         read(10,*) dumb1
@@ -479,7 +479,7 @@ subroutine print_center_of_mass_XYZ(N,filename,snaps,Lx,Ly,avg,r)
 
     close(10)
  
-    OPEN(unit=2,file=trim(filename)//'_cm.snap',action="write")
+    OPEN(unit=2,file=fileout,action="write")
 
 
     DO k=1,snaps
