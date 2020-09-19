@@ -663,3 +663,32 @@ subroutine radial_distribution_3max(filein, max1, max1r, max2, max2r, max3, max3
     
 
 end subroutine
+subroutine chain_msd_evaluation_from_lammpsfile(filein, Nchain, snaps, fileout)
+    implicit none 
+    integer :: i, k
+    character(64), intent(in) :: filein 
+    character(64), intent(in) :: fileout  
+    integer, intent(in) :: Nchain, snaps 
+    real(8) :: dr(snaps, Nchain) 
+    integer :: dt(snaps), dumb1, dumb2
+
+
+    OPEN(unit=110,file=trim(fileout),action="write")
+    OPEN(unit=120,file=trim(filein),action="read")
+
+
+    read(120,*) 
+    read(120,*) 
+    read(120,*)
+    do k = 1, snaps   
+        read(120,*) dt(k), dumb1
+        do i = 1, Nchain
+            read(120, *) dumb2, dr(k,i)
+        enddo 
+        write(110,'(I12.6,x,f12.6)') dt(k), sum(dr(k,:))/Nchain
+    enddo 
+
+    close(110)
+    close(120)
+
+end subroutine 
