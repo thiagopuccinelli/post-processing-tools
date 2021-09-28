@@ -2,6 +2,8 @@ import numpy as np
 import math 
 import matplotlib.pyplot as plt 
 from tools import excess_entropy_from_rdf,rdf_monomeric2d, rdf_monomer_to_monomer
+import time
+start_time = time.time()
 
 ##### read in lammps snap
 N = int(np.genfromtxt('../core-softened-phase-diagram/CSA/temp-0.01/lambda_0.60/run/lammps_temp_0.01_press_8.5.snap', max_rows=1))
@@ -24,9 +26,10 @@ print(excess_entropy_from_rdf.__doc__)
 
 sex, csum = excess_entropy_from_rdf(rdf,r)
 
-print(r)
+#print(r)
 #csum = csum[csum>0]
 #print(csum)
+print("--- %s seconds ---" % (time.time() - start_time))
 
 plt.figure()
 #plt.ylim(0,12)
