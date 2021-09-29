@@ -1,34 +1,33 @@
 import numpy as np 
 import matplotlib.pyplot as plt 
-from tools import read_in_trajectory, excess_entropy_from_rdf,rdf_monomeric2d, rdf_monomer_to_monomer
+import tools as tools 
 import time
 start_time = time.time()
 
-print(read_in_trajectory.__doc__)
-filein = '../core-softened-phase-diagram/CSA/temp-0.01/lambda_0.60/run/lammps_temp_0.01_press_8.5.snap'
+filein = '../core-softened-phase-diagram/CSA/temp-0.01/lambda_0.25/run/lammps_temp_0.01_press_6.5.snap'
 
+r = tools.read_in_trajectory(filein, 4000, 100)
 
-r = read_in_trajectory(filein, 4000, 100)
-# print(r)
-# print(np.shape(r)) 
-
-L1 = 1.1*np.absolute(np.max(r[0,:,0]) - np.min(r[0,:,0])) 
-L2 = 1.1*np.absolute(np.max(r[0,:,1]) - np.min(r[0,:,1])) 
+L1 = 1.1*np.absolute(np.max(r[:,:,0]) - np.min(r[:,:,0])) 
+L2 = 1.1*np.absolute(np.max(r[:,:,1]) - np.min(r[:,:,1])) 
 L3 = 0.0
-rdf, r = rdf_monomer_to_monomer(r[:,:,0],r[:,:,1],L1,L2)
+rdf, r = tools.rdf_monomer_to_monomer(r[:,:,0],r[:,:,1],L1,L2)
 
-sex, csum = excess_entropy_from_rdf(rdf,r)
+sex, csum, r_s2 = tools.excess_entropy_from_rdf(rdf,r)
+r_s2 = r_s2[r_s2>0]
+csum = csum[csum>0]
 
 rho = (0.5 * 4000) / (L1 * L2)
 
-print(sex * rho )
-
+print(csum)
+print(r_s2)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 plt.figure()
 #plt.ylim(0,12)
-data = np.genfromtxt("../core-softened-phase-diagram/CSA/temp-0.01/lambda_0.60/ex_entropy/press_8.5_cumsex.dat")
-plt.loglog(r,csum)
-plt.loglog(data[:,0],data[:,1],color="red")
+data = np.genfromtxt("../core-softened-phase-diagram/CSA/temp-0.01/lambda_0.25/ex_entropy/press_6.5_cumsex.dat")
+plt.plot(r_s2,csum)
+plt.plot(data[:,0],data[:,1],color="red")
+#plt.yscale('log')
 plt.show()
 
