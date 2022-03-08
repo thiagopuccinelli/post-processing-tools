@@ -44,7 +44,7 @@ subroutine rdf_3d(N, x, y, z, Lx, Ly, Lz, snaps, avg, r)
            vb=((j+1)**3.-j**3.)*delg**3.
            nid = (4./3.)*pi*vb*rho
            gr(i,j)=gr(i,j)/(N*nid)
-           avg(j)=avg(j)+gr(i,j)/snaps/N
+           avg(j)=avg(j)+gr(i,j)/snaps
         END DO
     END DO
 
