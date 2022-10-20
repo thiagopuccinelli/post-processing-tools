@@ -1,18 +1,19 @@
-subroutine rdf_monomer_to_monomer(N,x,y,Lx,Ly,snaps,avg,r) 
+subroutine rdf_monomer_to_monomer(N,x,y,Lx,Ly,rmax,snaps,avg,r) 
     implicit none 
  
     integer, intent(in) :: N
     integer, intent(in) :: snaps  
     real(8), intent(in) :: Lx,Ly
+    real(8), intent(in) :: rmax 
     real(8), intent(in) :: x(snaps,N), y(snaps,N)
-    integer, parameter :: Nhis = 2.**8. 
+    integer, parameter :: Nhis = 2**8 
     real(8), intent(out) :: avg(Nhis),r(Nhis)
     integer i, j, k, ig
     DOUBLE PRECISION::rr,delg,pi,xr,yr,r2,vb,nid,rho
     DOUBLE PRECISION,DIMENSION(10000, Nhis)::gr
 
 
-    delg=10.0/(Nhis)
+    delg=rmax/(Nhis)
     pi=4*ATAN(1.)
     rho = N/((Lx*Ly))
     gr = 0.0d0
@@ -32,7 +33,7 @@ subroutine rdf_monomer_to_monomer(N,x,y,Lx,Ly,snaps,avg,r)
            r2=xr*xr+yr*yr
            rr=SQRT(r2)
   
-           IF(rr<=10.0)THEN
+           IF(rr<=rmax)THEN
                 if ((-1.0)**i == 1.0) then !se i é par cacula sempre
                     ig=ceiling(rr/delg)
                     gr(k,ig)=gr(k,ig)+2.
