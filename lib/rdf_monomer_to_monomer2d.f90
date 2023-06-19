@@ -6,7 +6,7 @@ subroutine rdf_monomer_to_monomer(N,x,y,Lx,Ly,rmax,snaps,avg,r)
     real(8), intent(in) :: Lx,Ly
     real(8), intent(in) :: rmax 
     real(8), intent(in) :: x(snaps,N), y(snaps,N)
-    integer, parameter :: Nhis = 2**8 
+    integer, parameter :: Nhis = 2**9 
     real(8), intent(out) :: avg(Nhis),r(Nhis)
     integer i, j, k, ig
     DOUBLE PRECISION::rr,delg,pi,xr,yr,r2,vb,nid,rho

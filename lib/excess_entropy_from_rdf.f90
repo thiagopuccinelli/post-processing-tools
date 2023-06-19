@@ -1,7 +1,7 @@
 subroutine excess_entropy_from_rdf(gor,r,sex,csum,newR)
     implicit none 
     integer :: i, ndim
-    integer, parameter :: Nhis = 2**8
+    integer, parameter :: Nhis = 2**9
     real(8) :: cum
     real(8),intent(in) :: gor(Nhis), r(Nhis)  
     real(8), intent(out) :: sex
