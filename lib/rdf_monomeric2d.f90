@@ -1,17 +1,18 @@
-subroutine rdf_monomeric2d(N,x,y,Lx,Ly,snaps,avg,r) 
+subroutine rdf_monomeric2d(N,x,y,Lx,Ly,nbins,snaps,avg,r) 
     implicit none 
  
     integer, intent(in) :: N
     integer, intent(in) :: snaps  
+    integer, intent(in) :: nbins
     real(8), intent(in) :: Lx,Ly
     real(8), intent(in) :: x(snaps,N), y(snaps,N)
-    integer, parameter :: Nhis = 2.**8. 
-    real(8), intent(out) :: avg(Nhis),r(Nhis)
+    real(8), intent(out) :: avg(nbins),r(nbins)
     integer i, j, k, ig
     DOUBLE PRECISION::rr,delg,pi,xr,yr,r2,vb,nid,rho
-    DOUBLE PRECISION,DIMENSION(10000, Nhis)::gr
+    DOUBLE PRECISION,DIMENSION(10000, nbins)::gr
 
-    delg=10.0/(Nhis)
+    
+    delg=Lx/(nbins)
     pi=4*ATAN(1.)
     rho = N/((Lx*Ly))
     gr = 0.0d0
@@ -31,7 +32,7 @@ subroutine rdf_monomeric2d(N,x,y,Lx,Ly,snaps,avg,r)
            r2=xr*xr+yr*yr
            rr=SQRT(r2)
   
-           IF(rr.LT.10.d0)THEN
+           IF(rr.LT.Lx)THEN
                  ig=ceiling(rr/delg)
                  gr(k,ig)=gr(k,ig)+2.
            END IF
@@ -42,7 +43,7 @@ subroutine rdf_monomeric2d(N,x,y,Lx,Ly,snaps,avg,r)
      
   
      
-    DO j=1,Nhis
+    DO j=1,nbins
         DO i=1,snaps
            r(j)=delg*(j+0.5)
            vb=((j+1)**2.-j**2.)*delg**2.
@@ -52,5 +53,8 @@ subroutine rdf_monomeric2d(N,x,y,Lx,Ly,snaps,avg,r)
         END DO
     END DO
   
+    ! deallocate(avg)
+    ! deallocate(r)
+    ! deallocate(gr)
     
 end subroutine 
