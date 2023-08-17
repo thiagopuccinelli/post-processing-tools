@@ -25,7 +25,7 @@ class post_processing:
         sex = 2. * np.pi * rho * sex 
         return sex  
     
-    def compute_s2_from_rdf2d(rdf,r,Npart,Lx,Ly,Lz):
+    def compute_s2_from_rdf2d(rdf,r,Npart,Lx,Ly):
         sex = 0.0 
         for i,val in enumerate(rdf):
             if val > 0:
