@@ -5,14 +5,15 @@ class post_processing:
 
     def __init__(self):
         self.read_trajectory()
-        self.rdf_compute()
-        self.compute_s2_from_rdf()
+        self.rdf_compute2d()
+        self.compute_s2_from_rdf3d()
+        self.compute_s2_from_rdf2d()
 
     def read_trajectory(filename,Npart,snaps):
        trajectory = tools.read_in_trajectory(filename,Npart,snaps)
        return trajectory 
 
-    def rdf_compute(rx,ry,Lx,Ly,nbins):
+    def rdf_compute2d(rx,ry,Lx,Ly,nbins):
         return tools.rdf_monomeric2d(rx,ry,Lx,Ly,nbins)
 
     def compute_s2_from_rdf3d(rdf,r,Npart,Lx,Ly,Lz):
