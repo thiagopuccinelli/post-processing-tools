@@ -1,10 +1,10 @@
-subroutine rdf_monomeric2d(N,x,y,Lx,Ly,nbins,snaps,avg,r) 
+subroutine rdf_monomeric2d(N,x,y,Lx,Ly,nbins,rmax,snaps,avg,r) 
     implicit none 
  
     integer, intent(in) :: N
     integer, intent(in) :: snaps  
     integer, intent(in) :: nbins
-    real(8), intent(in) :: Lx,Ly
+    real(8), intent(in) :: Lx,Ly,rmax
     real(8), intent(in) :: x(snaps,N), y(snaps,N)
     real(8), intent(out) :: avg(nbins),r(nbins)
     integer i, j, k, ig
@@ -12,7 +12,7 @@ subroutine rdf_monomeric2d(N,x,y,Lx,Ly,nbins,snaps,avg,r)
     DOUBLE PRECISION,DIMENSION(10000, nbins)::gr
 
     
-    delg=Lx/(nbins)
+    delg=rmax/nbins
     pi=4*ATAN(1.)
     rho = N/((Lx*Ly))
     gr = 0.0d0
@@ -32,7 +32,7 @@ subroutine rdf_monomeric2d(N,x,y,Lx,Ly,nbins,snaps,avg,r)
            r2=xr*xr+yr*yr
            rr=SQRT(r2)
   
-           IF(rr.LT.Lx)THEN
+           IF(rr.LT.rmax)THEN
                  ig=ceiling(rr/delg)
                  gr(k,ig)=gr(k,ig)+2.
            END IF
