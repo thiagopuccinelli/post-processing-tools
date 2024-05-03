@@ -1,17 +1,17 @@
-subroutine rdf_3d(N, x, y, z, Lx, Ly, Lz, snaps, avg, r)
+subroutine rdf_3d(N, x, y, z, Lx, Ly, Lz,nbins,rmax,snaps, avg, r)
     implicit none 
  
     integer, intent(in) :: N
-    integer, intent(in) :: snaps  
-    real(8), intent(in) :: Lx,Ly, Lz 
+    integer, intent(in) :: snaps,nbins   
+    real(8), intent(in) :: Lx,Ly,Lz,rmax 
     real(8), intent(in) :: x(snaps,N), y(snaps,N), z(snaps,N)
     integer, parameter :: Nhis = 2.**8. 
-    real(8), intent(out) :: avg(Nhis),r(Nhis)
+    real(8), intent(out) :: avg(nbins),r(nbins)
     integer i, j, k, ig
     DOUBLE PRECISION::rr,delg,pi,xr,yr,zr,r2,vb,nid,rho
-    DOUBLE PRECISION,DIMENSION(10000, Nhis)::gr
+    DOUBLE PRECISION,DIMENSION(10000, nbins)::gr
 
-    delg = Lx / (2.* Nhis)
+    delg = rmax/nbins
     rho = N / (Lx * Ly * Lz)
     pi = 4. * ATAN(1.)
     gr = 0.0d0
@@ -30,7 +30,7 @@ subroutine rdf_3d(N, x, y, z, Lx, Ly, Lz, snaps, avg, r)
 
                 r2 = xr * xr + yr * yr + zr * zr 
                 rr = sqrt(r2)
-                if (rr .lt. Lx / 2.0) then 
+                if (rr .lt. rmax) then 
                     ig = ceiling(rr / delg)
                     gr(k,ig) = gr(k,ig) + 2.
                 endif 
